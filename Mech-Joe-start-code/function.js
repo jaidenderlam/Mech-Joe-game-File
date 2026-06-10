@@ -26,12 +26,18 @@ function drawrunGame() {
 function drawgameover() {
     cartoon();
     gameOver();
-
+if (yout){
     willhelm.play();
+    yout = false;
+    setTimeout(() => {
+        yout = true;
+    },3000)
+} 
     //game over line
     shapes.fillStyle = "#8E0909";
     shapes.fillText(" Game Over", c.width / 4 + 150, c.height / 4 + 130);
 }
+
 //draw th main component and character
 function cartoon() {
     drawMainStuff();
@@ -83,6 +89,10 @@ function reset() {
     distances = 0;
     health = 100;
     canTakeDamage = true;
+    healingIspossible = true;
+    yout = true;
+    character = MaleJoeImg;
+
 
     game = "start";
     healthbarImg = healthbarFull;
@@ -150,6 +160,7 @@ function reset() {
 }
 
 function gameOver() {
+
     if (distances > bestDistance) {
         bestDistance = distances;
         distances = 0;
@@ -160,8 +171,7 @@ function gameOver() {
 
     game = "gameover";
     drawIt();
-
-    setTimeout(reset, 1000);
+    setTimeout(reset, 3000);
 }
 
 function distanceCount() {
@@ -184,18 +194,18 @@ function bestdistanceConversion() {
 
 function moveSludges() {
     //sludge 1
-    sludge1.x += -5;
+    sludge1.x += -7;
     if (sludge1.x + sludge1.w < 0) {
         sludge1.x = Math.random() * 100 + 800;
     }
     //sludge 2
-    sludge2.x += -5;
-    if (sludge2.x + sludge1.w < 0) {
+    sludge2.x += -7;
+    if (sludge2.x + sludge2.w < 0) {
         sludge2.x = Math.random() * 100 + 1800;
     }
     //sludge 3
-    sludge3.x += -5;
-    if (sludge3.x + sludge2.w < 0) {
+    sludge3.x += -7;
+    if (sludge3.x + sludge3.w < 0) {
         sludge3.x = Math.random() * 100 + 3500;
     }
 }
@@ -209,7 +219,7 @@ function movePow() {
 
     //pow 2
     pow2.x += -3;
-    if (pow2.x + pow1.w < -10) {
+    if (pow2.x + pow2.w < -10) {
         pow2.x = Math.random() * 1000 + 700;
     } 
 }
@@ -289,14 +299,21 @@ function checkCollision() {
             personRight > P.x &&
             person.y < pBottom &&
             personBottom > P.y
-        ) {
+        ) { 
+            if (healingIspossible){
             health += 25;
+            updateHealthBar();
+            healing.currentTime = 0;
+            healing.play(); 
+                healingIspossible = false;
+                setTimeout(() => {
+                     healingIspossible = true;
+                }, 1000)
+            }
             if (health > 100) {
                 health = 100;
             }
-            updateHealthBar();
-            healing.currentTime = 0;
-            healing.play();
+
 
             P.visible = false;
 
@@ -312,11 +329,11 @@ function checkCollision() {
 function updateHealthBar() {
     if (health <= 0) {
         healthbarImg = healthbarempty;
-    } else if (health <= 25) {
+    } else if (health === 25) {
         healthbarImg = healthbarquarter;
-    } else if (health <= 50) {
+    } else if (health === 50) {
         healthbarImg = healthbarhalf;
-    } else if (health <= 75) {
+    } else if (health === 75) {
         healthbarImg = healthbar3quarter;
     } else {
         healthbarImg = healthbarFull;
@@ -325,7 +342,7 @@ function updateHealthBar() {
 
 function jump() {
     if (person.y < c.height - 230) {
-        person.y += 6;
+        person.y += 3;
         character = MaleJoeImgJump;
     } else {
         character = MaleJoeImg;
